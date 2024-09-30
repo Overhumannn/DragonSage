@@ -1,0 +1,24 @@
+{
+  "name": "dragon_bot",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@opensea/stream-js": "^0.1.3",
+    "node-localstorage": "^3.0.5",
+    "ws": "^8.18.0"
+  }
+}
