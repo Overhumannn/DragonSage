@@ -18,8 +18,6 @@ selenium==4.13.0
 numpy==1.25.0
 humanize==4.6.0
 websockets==11.0.3
-dotenv==0.21.1
 pydantic-settings==2.0.3
-Flask==3.0.0
+Flask==2.3.2
 gunicorn==20.1.0
-pydantic-settings==2.0.3
