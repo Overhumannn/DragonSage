@@ -3,11 +3,9 @@ import random
 import aiohttp
 from datetime import datetime, timedelta
 import requests
-
 from aiogram import types
 from aiogram.filters import Command
 from aiogram.types import Message
-
 from app.database.crud import get_user_language
 from bot import dp  # Ваш экземпляр Dispatcher
 from config import settings
