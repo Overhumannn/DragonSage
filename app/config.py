@@ -9,7 +9,7 @@ load_dotenv()
 class Settings(BaseSettings):
     telegram_bot_token: str = os.getenv("telegram_bot_token", "")
     crypto_api_key: str = os.getenv("crypto_api_key", "")
-    db_host: str = os.getenv("db_host", "localhost")
+    db_host: str = os.getenv("db_host", "db")
     db_port: str = os.getenv("db_port", "5432")
     db_user: str = os.getenv("db_user", "")
     db_password: str = os.getenv("db_password", "")

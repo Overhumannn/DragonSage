@@ -9,7 +9,7 @@ services:
       BINANCE_API_KEY: ${binance_api_key}
       BINANCE_API_SECRET: ${binance_api_secret}
       CRYPTO_API_KEY: ${crypto_api_key}
-      DB_HOST: localhost  # Указываем имя сервиса базы данных
+      DB_HOST: ${db_host}
       DB_PORT: 5432
       DB_USER: ${db_user}
       DB_PASSWORD: ${db_password}
@@ -28,7 +28,7 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - localhost
+      - db
     ports:
       - "8080:8080"  # Добавляем публикацию порта 8080 для контейнера bot
     command: python app/main.py
