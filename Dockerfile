@@ -5,7 +5,10 @@ FROM python:3.9-slim-buster
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    python-dev \
+    python3-dev \
+    curl \
+    wget \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 # 3. Создайте директорию для вашего приложения внутри контейнера
@@ -27,5 +30,5 @@ ENV PYTHONUNBUFFERED=1 \
 # 8. Откройте порт 8080 (или другой, если требуется)
 EXPOSE 8080
 
-# 9. Определите команду для запуска вашего бота
+# 9. Установите команду для запуска вашего бота
 CMD ["python", "app/main.py"]

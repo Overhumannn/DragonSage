@@ -5,30 +5,32 @@ services:
     build: .
     container_name: telegram_bot
     environment:
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      BINANCE_API_KEY: ${BINANCE_API_KEY}
-      BINANCE_API_SECRET: ${BINANCE_API_SECRET}
-      CRYPTO_API_KEY: ${CRYPTO_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${telegram_bot_token}
+      BINANCE_API_KEY: ${binance_api_key}
+      BINANCE_API_SECRET: ${binance_api_secret}
+      CRYPTO_API_KEY: ${crypto_api_key}
       DB_HOST: db  # Указываем имя сервиса базы данных
       DB_PORT: 5432
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      NEWSDATA_API_KEY: ${NEWSDATA_API_KEY}
-      OPENSEA_API_KEY: ${OPENSEA_API_KEY}
-      COINDAR_API: ${COINDAR_API}
-      BITGET_API_KEY: ${BITGET_API_KEY}
-      BITGET_SECRET_API_KEY: ${BITGET_SECRET_API_KEY}
-      THEGRAPH_API_KEY: ${THEGRAPH_API_KEY}
-      TRON_API_KEY: ${TRON_API_KEY}
-      ETHERSCAN_API_KEY: ${ETHERSCAN_API_KEY}
+      DB_USER: ${db_user}
+      DB_PASSWORD: ${db_password}
+      DB_NAME: ${db_name}
+      OPENAI_API_KEY: ${openai_api_key}
+      NEWSDATA_API_KEY: ${newsdata_api_key}
+      OPENSEA_API_KEY: ${opensea_api_key}
+      COINDAR_API: ${coindar_api}
+      BITGET_API_KEY: ${bitget_api_key}
+      BITGET_SECRET_API_KEY: ${bitget_secret_api_key}
+      THEGRAPH_API_KEY: ${thegraph_api_key}
+      TRON_API_KEY: ${tron_api_key}
+      ETHERSCAN_API_KEY: ${etherscan_api_key}
     env_file:
       - .env
     volumes:
       - .:/app
     depends_on:
-      - db  # Зависимость от сервиса базы данных
+      - db
+    ports:
+      - "8080:8080"  # Добавляем публикацию порта 8080 для контейнера bot
     command: python app/main.py
     restart: unless-stopped
 
@@ -36,9 +38,9 @@ services:
     image: postgres:13
     container_name: postgres_db
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${db_user}
+      POSTGRES_PASSWORD: ${db_password}
+      POSTGRES_DB: ${db_name}
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
