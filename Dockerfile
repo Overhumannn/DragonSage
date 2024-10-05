@@ -1,7 +1,7 @@
-# 1. Укажите базовый образ Python с минимальным набором инструментов
+# Базовый образ Python
 FROM python:3.9-slim-buster
 
-# 2. Обновите систему и установите необходимые системные зависимости
+# Установка необходимых системных пакетов, включая PostgreSQL и Supervisor
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
@@ -9,26 +9,42 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
     ffmpeg \
+    postgresql \
+    postgresql-contrib \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Создайте директорию для вашего приложения внутри контейнера
+# Установка переменных окружения (замените на ваши значения или используйте ARG)
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DB_USER=${db_user} \
+    DB_PASSWORD=${db_password} \
+    DB_NAME=${db_name}
+
+# Создание рабочего каталога
 WORKDIR /app
 
-# 4. Скопируйте файл зависимостей requirements.txt в контейнер
+# Копирование файла зависимостей и установка зависимостей Python
 COPY requirements.txt .
-
-# 5. Установите зависимости Python и удалите кеш pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 6. Скопируйте все файлы вашего проекта в рабочую директорию контейнера
+# Копирование всего кода приложения
 COPY . .
 
-# 7. Установите переменные окружения
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+# Копирование конфигурации Supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# 8. Откройте порт 8080 (или другой, если требуется)
+# Инициализация базы данных PostgreSQL
+RUN service postgresql start && \
+    su postgres -c "psql -c \"CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';\"" && \
+    su postgres -c "psql -c \"CREATE DATABASE $DB_NAME OWNER $DB_USER;\"" && \
+    service postgresql stop
+
+# Создание директорий для логов Supervisor
+RUN mkdir -p /var/log/postgresql /var/log/bot
+
+# Экспорт порта (если необходимо)
 EXPOSE 8080
 
-# 9. Установите команду для запуска вашего бота
-CMD ["python", "app/main.py"]
+# Запуск Supervisor
+CMD ["/usr/bin/supervisord"]
