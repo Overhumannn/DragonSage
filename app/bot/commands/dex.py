@@ -79,84 +79,87 @@ messages = {
             "🔍 Примечание: На DEX, таких как Uniswap, BTC обычно представлен как WBTC (Wrapped BTC). Используется WBTC для запросов цен."
         ]
     },
-    # Добавьте другие языки, если необходимо
 }
 
-@dp.message(Command('dex'))
+# Обработчик команды /dex
+@dp.message(Command(commands=['dex']))
 async def dex_command_handler(message: Message):
     logger.info(f"Received /dex command from user {message.from_user.id}")
 
     try:
-        # Получаем предпочтительный язык пользователя
-        user_language = get_user_language(message.from_user.id)
-        logger.debug(f"User language: {user_language}")
-    except Exception as e:
-        logger.error(f"Error fetching user language: {e}")
-        user_language = 'en'  # По умолчанию
+        # Получаем язык пользователя из базы данных
+        language = get_user_language(message.from_user.id)  # Предполагается, что функция синхронная
+        is_russian = (language == 'ru')
 
-    # По умолчанию используем английский, если язык не поддерживается
-    lang = messages.get(user_language, messages['en'])
+        # Разделение сообщения на символ
+        args = message.text.split()[1:]
+        if len(args) != 1:
+            if is_russian:
+                await message.reply("❗️ Пожалуйста, укажите символ криптовалюты. Например: /dex WBTC")
+            else:
+                await message.reply("❗️ Please specify a cryptocurrency symbol. For example: /dex WBTC")
+            return
 
-    # Получаем символ криптовалюты из текста сообщения
-    args = message.text.strip().split()
-    if len(args) < 2:
-        logger.warning(f"No symbol provided by user {message.from_user.id}")
-        response = random.choice(lang['no_symbol'])
-        await message.reply(response)
-        return
+        symbol = args[0].upper()
+        logger.info(f"Fetching price for symbol: {symbol}")
 
-    symbol = args[1].upper()
-    logger.info(f"Fetching price for symbol: {symbol}")
+        # Проверяем, если символ BTC, заменяем его на WBTC
+        if symbol == 'BTC':
+            symbol = 'WBTC'
+            logger.info("Symbol BTC detected. Using WBTC for query.")
+            if is_russian:
+                await message.reply("ℹ️ Примечание: на DEX платформах BTC часто представлен как WBTC. Используем WBTC для запросов цены.")
+            else:
+                await message.reply("ℹ️ Note: On DEX platforms BTC is often represented as WBTC. Using WBTC for price queries.")
 
-    # Проверяем, если символ BTC, заменяем его на WBTC
-    if symbol == 'BTC':
-        symbol = 'WBTC'
-        logger.info("Symbol BTC detected. Using WBTC for query.")
-        response = random.choice(lang['wbtc_info'])
-        await message.reply(response)
+        # Подготавливаем запрос к API без указания биржи
+        url = 'https://min-api.cryptocompare.com/data/price'
+        params = {
+            'fsym': symbol,
+            'tsyms': 'USDT',
+            'api_key': settings.crypto_api_key
+        }
+        logger.debug(f"API request URL: {url} with params: {params}")
 
-    # Подготавливаем запрос к API без указания биржи
-    url = 'https://min-api.cryptocompare.com/data/price'
-    params = {
-        'fsym': symbol,
-        'tsyms': 'USDT',
-        'api_key': settings.crypto_api_key  # Исправлено имя атрибута
-        # 'e': exchange  # Удалено
-    }
-    logger.debug(f"API request URL: {url} with params: {params}")
-
-    try:
-        # Делаем запрос к API
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, params=params) as resp:
-                logger.debug(f"API response status: {resp.status}")
-                if resp.status == 200:
-                    data = await resp.json()
-                    logger.debug(f"API response data: {data}")
-                    if 'USDT' in data:
-                        price = data['USDT']
-                        logger.info(f"Price fetched: {symbol} = {price} USDT")
-                        response = random.choice(lang['price']).format(symbol=symbol, price=price)
-                        await message.reply(response)
-                    elif 'Response' in data and data['Response'] == 'Error':
-                        error_message = data.get('Message', 'Unknown error.')
-                        logger.error(f"API Error: {error_message}")
-                        response = random.choice(lang['error']).format(error_message=error_message)
-                        await message.reply(response)
+        try:
+            # Делаем запрос к API
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, params=params) as resp:
+                    logger.debug(f"API response status: {resp.status}")
+                    if resp.status == 200:
+                        data = await resp.json()
+                        logger.debug(f"API response data: {data}")
+                        if 'USDT' in data:
+                            price = data['USDT']
+                            logger.info(f"Price fetched: {symbol} = {price} USDT")
+                            if is_russian:
+                                response = f"💰 Цена {symbol} составляет {price} USDT."
+                            else:
+                                response = f"💰 The price of {symbol} is {price} USDT."
+                            await message.reply(response)
+                        else:
+                            if is_russian:
+                                await message.reply("❌ Данные по этой криптовалюте не найдены.")
+                            else:
+                                await message.reply("❌ No data found for this cryptocurrency.")
                     else:
-                        logger.warning("Unknown API response structure.")
-                        response = random.choice(lang['unknown_error'])
-                        await message.reply(response)
-                else:
-                    logger.error(f"API request failed with status {resp.status}")
-                    response = random.choice(lang['api_error'])
-                    await message.reply(response)
+                        logger.error(f"API request failed with status {resp.status}")
+                        if is_russian:
+                            await message.reply("🔧 Не удалось получить данные от API. Попробуйте позже.")
+                        else:
+                            await message.reply("🔧 Failed to retrieve data from the API. Please try again later.")
+        except Exception as e:
+            logger.exception(f"Exception during API request: {e}")
+            if is_russian:
+                await message.reply("⚠️ Произошла ошибка при получении данных о цене.")
+            else:
+                await message.reply("⚠️ An error occurred while fetching price data.")
     except Exception as e:
-        logger.exception(f"Exception during API request: {e}")
-        response = random.choice(lang['unknown_error'])
-        await message.reply(response)
-
-
+        logger.error(f"Ошибка: {e}")
+        if is_russian:
+            await message.reply("⚠️ Произошла ошибка при обработке команды.")
+        else:
+            await message.reply("⚠️ An error occurred while processing the command.")
 
 
 

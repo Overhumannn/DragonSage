@@ -61,9 +61,7 @@ async def send_help(message: types.Message):
             f"• <b>/gas_fees</b> - Узнайте текущие комиссии за газ в сетях Ethereum и BSC.\n\n"
             
             f"• <b>/google</b> [ключевое слово] - Анализируйте популярность ключевых слов с помощью Google Trends. Пример: <b>/google Bitcoin</b>\n\n"
-            
-            f"• <b>/heatmap</b> - Визуализируйте рынок криптовалют с помощью тепловой карты, чтобы получить обзор текущих тенденций.\n\n"
-            
+                        
             f"• <b>/whales</b> - Позволяет пользователям отслеживать крупнейшие ордера на криптовалютной бирже Binance за последнее время. Пример: <b>/whales BTCUSDT</b>\n\n"
     
                 f"💡 <b>Нужна дополнительная помощь?</b>\n"
@@ -120,8 +118,6 @@ async def send_help(message: types.Message):
             
             f"• <b>/google</b> [keyword] - Analyze the popularity of keywords through Google Trends. Example: <b>/google Bitcoin</b>\n\n"
             
-            f"• <b>/heatmap</b> - Visualize the crypto market with a heatmap to get a bird’s-eye view of the current trends.\n\n"
-
             f"• <b>/whales</b> - Allows users to track the largest orders on the Binance cryptocurrency exchange in recent times. Example: <b>/whales BTCUSDT</b>\n\n"
     
             f"💡 <b>Need more assistance?</b>\n"

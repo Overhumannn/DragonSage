@@ -42,7 +42,6 @@ async def send_welcome(message: types.Message):
             f"🛠 <b>Технические инструменты</b>:\n"
             f"• <b>/gas_fees</b> — Узнайте текущие комиссии за газ для сетей Ethereum и BSC.\n"
             f"• <b>/google</b> [ключевое слово] — Анализируйте популярность ключевых слов с помощью Google Trends. Пример: <b>/google Bitcoin</b>\n"
-            f"• <b>/heatmap</b> — Визуализируйте рынок криптовалют с помощью тепловой карты.\n\n"
                 
             f"✨ <b>PRO функции</b>:\n"
             f"• <b>/ainews</b> — Получите анализ последних новостей криптовалют с помощью AI.\n"
@@ -93,7 +92,6 @@ async def send_welcome(message: types.Message):
             f"🛠 <b>Technical Tools</b>:\n"
             f"• <b>/gas_fees</b> - Check the current gas fees for Ethereum and BSC networks.\n"
             f"• <b>/google</b> [keyword] - Analyze the popularity of keywords using Google Trends. Example: <b>/google Bitcoin</b>\n"
-            f"• <b>/heatmap</b> - Visualize the crypto market with a heatmap.\n\n"
             
             f"✨ <b>PRO Features</b>:\n"
             f"• <b>/ainews</b> - Get AI-powered analysis of the latest crypto news.\n"

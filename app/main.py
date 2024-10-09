@@ -19,7 +19,6 @@ from bot.commands import (
     description,
     gas, 
     google, 
-    heatmap, 
     index,
     language, 
     market_summary, 
