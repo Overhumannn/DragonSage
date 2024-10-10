@@ -24,3 +24,7 @@ def get_db_connection(retries=5, delay=5):
                 logger.info(f"Повторная попытка подключения ({attempt + 2} из {retries})...")
             else:
                 raise e
+
+
+
+
