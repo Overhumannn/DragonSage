@@ -16,3 +16,4 @@ env/
 *.dll
 *.so
 *.dylib
+.env
